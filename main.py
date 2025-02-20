@@ -1,9 +1,10 @@
+from contextlib import asynccontextmanager
 from core.settings import settings
 from fastapi import FastAPI
 import uvicorn
 from db.db import db_help
 
-
+@asynccontextmanager
 async def lifespan(app):
     print('300 - полный век програмиста')
     yield
