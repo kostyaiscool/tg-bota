@@ -4,7 +4,7 @@ from aiogram.types import Update
 from bot import bot, dispatcher
 from core import settings
 
-router = APIRouter()
+router = APIRouter(tags=["webhooks"])
 
 
 @router.post(settings.telegram.webhook_path)

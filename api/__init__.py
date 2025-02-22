@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from sqladmin import Admin
 from contextlib import asynccontextmanager
 
 from db.database import db_helper
@@ -12,3 +13,5 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Backend API", version="1.0", lifespan=lifespan)
+
+admin_app = Admin(app, db_helper.engine)
