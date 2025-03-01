@@ -10,6 +10,7 @@ async def lifespan(app):
     yield
     db_help.dispose()
     print('Скажи клей')
-app: FastAPI = FastAPI()
+app: FastAPI = FastAPI(lifespan=lifespan)
 if __name__ == '__main__':
     uvicorn.run('main:app', reload=True)
+
