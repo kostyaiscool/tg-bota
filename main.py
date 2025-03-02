@@ -6,9 +6,10 @@ from db.db import db_help
 
 @asynccontextmanager
 async def lifespan(app):
+    await db_help.init_db()
     print('300 - полный век програмиста')
     yield
-    db_help.dispose()
+    await db_help.dispose()
     print('Скажи клей')
 app: FastAPI = FastAPI(lifespan=lifespan)
 if __name__ == '__main__':

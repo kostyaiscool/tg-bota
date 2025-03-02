@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, async_sessionmaker, AsyncSession
 
 from core.settings import settings
+from db.base import Base
 
 
 class DbHelp:
@@ -14,6 +15,8 @@ class DbHelp:
     async def session_get(self):
         async with self.session() as session:
             yield session
-
+    async def init_db(self):
+        async with self.engine.begin() as con:
+            await con.run_sync(Base.metadata.create_all)
 
 db_help: DbHelp = DbHelp(settings.db.url)
