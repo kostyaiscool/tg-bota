@@ -3,7 +3,7 @@ from core.settings import settings
 
 
 async def set_telegram_webhook():
-    response = bot.set_webhook(url=settings.telegram.webhook_url)
+    response = bot.set_webhook(url=settings.app_config__telegram__webhook_url)
     if response:
         print('Работает по')
     else:
