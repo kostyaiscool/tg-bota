@@ -5,6 +5,7 @@ from db.db import db_help
 from bot.__main__ import run_webhook
 import threading
 from api.v1.endpoints.webhook import router as webhook_router
+from api.v1.endpoints.user import router as user_router
 
 @asynccontextmanager
 async def lifespan(app):
@@ -15,8 +16,9 @@ async def lifespan(app):
     print('Скажи клей')
 app: FastAPI = FastAPI(lifespan=lifespan)
 app.include_router(webhook_router)
+app.include_router(user_router)
 if __name__ == '__main__':
-    uvicorn.run('main:app', reload=True)
     bot_thread = threading.Thread(target=run_webhook, daemon=True)
     bot_thread.start()
-
+    uvicorn.run('main:app', reload=True)
+    bot_thread.join()

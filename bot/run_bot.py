@@ -1,10 +1,10 @@
 from bot import bot
-from core.settings import settings
+from core import settings
 
 
 async def set_telegram_webhook():
-    response = bot.set_webhook(url=settings.app_config__telegram__webhook_url)
+    response = await bot.set_webhook(url=settings.tg.webhook_url)
     if response:
-        print('Работает по')
+        print('По запустил бота на вебхуков')
     else:
-        print('по не работает')
+        print('По не запустил вебхуки')

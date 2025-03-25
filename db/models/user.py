@@ -8,7 +8,7 @@ from db.base import Base
 
 class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False)
-    usermame: Mapped[str] = mapped_column(String(length=32), nullable=True)
+    username: Mapped[str] = mapped_column(String(length=32), nullable=True)
     first_name: Mapped[str] = mapped_column(String(64))
     last_name: Mapped[str] = mapped_column(String(64), nullable=True)
     language_code: Mapped[str] = mapped_column(String(10), nullable=True)

@@ -5,8 +5,7 @@ from bot import dp
 dp.include_router(router)
 
 
-async def run_webhook():
-    await set_telegram_webhook()
+def run_webhook():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete()
+    loop.run_until_complete(set_telegram_webhook())
