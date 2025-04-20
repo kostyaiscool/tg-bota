@@ -1,14 +1,17 @@
 import asyncio
 
+from aiogram_dialog import setup_dialogs
 from sqlalchemy.util import await_only
 
 from api.utils.set_telegram_webhook import set_telegram_webhook, delete_telegram_webhook
 from bot import dispatcher, bot
+from bot.dialogs import dialog
 from core import settings, RunningMode, logger
 from bot.handlers.messages import router as messages_router
 
 dispatcher.include_router(messages_router)
-
+dispatcher.include_router(dialog)
+setup_dialogs(dispatcher)
 
 async def run_polling() -> None:
     await delete_telegram_webhook()

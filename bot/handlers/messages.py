@@ -2,6 +2,9 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 import aiohttp
+from aiogram_dialog import StartMode, DialogManager
+
+from bot.dialogs.states import Wiki
 from core import logger
 from schemas.user import TelegramUser
 
@@ -48,3 +51,8 @@ async def start_command(message: Message):
         except Exception as e:
             logger.error(f"Error while adding user: {e}")
             await message.answer("Щось пішло не так. Спробуйте ще раз пізніше.")
+
+
+@router.message(Command(commands=["catalog"]))
+async def start_command(message: Message, dialog_manager: DialogManager):
+    await dialog_manager.start(Wiki.main, mode=StartMode.RESET_STACK)

@@ -4,7 +4,7 @@ from typing import Optional
 
 class TelegramUser(BaseModel):
     id: int
-    username: str
+    username: Optional[str] = None
     first_name: str
     last_name: Optional[str] = None
     language_code: Optional[str] = None
