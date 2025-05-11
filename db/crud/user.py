@@ -1,35 +1,35 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.exc import NoResultFound
+from typing import Mapping
 
-from db.models.user import TelegramUser
-from schemas.user import TelegramUser as TelegramUserSchema
+from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.models.user import User
+from schemas.user import TelegramUser
 
 
 class TelegramUserCRUD:
-
     @staticmethod
-    async def get_user(session: AsyncSession, user_id: int) -> TelegramUser | None:
+    async def get_user(session: AsyncSession, user_id: int) -> TelegramUser:
         try:
-            result = await session.execute(select(TelegramUser).where(TelegramUser.id == user_id))
+            result = await session.execute(select(User).where(User.id == user_id))
             return result.scalar_one()
         except NoResultFound:
+            print('Я ЗАПЕР 500 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
             return None
 
     @staticmethod
-    async def create_or_update_user(session: AsyncSession, user_data: TelegramUserSchema) -> tuple[TelegramUser, bool]:
+    async def create_or_update(session: AsyncSession, user_data: TelegramUser):
         user = await TelegramUserCRUD.get_user(session, user_data.id)
-        is_new_user = False
 
         if user:
             for key, value in user_data.dict().items():
                 setattr(user, key, value)
         else:
-            user = TelegramUser(**user_data.dict())
+            user = User(**user_data.dict())
             session.add(user)
-            is_new_user = True
 
         await session.commit()
         await session.refresh(user)
 
-        return user, is_new_user
+        return user

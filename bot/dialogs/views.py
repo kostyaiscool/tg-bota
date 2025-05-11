@@ -1,17 +1,36 @@
-from aiogram.types import CallbackQuery
 from aiogram_dialog import Window, DialogManager
-from aiogram_dialog.widgets.kbd import Button
-from aiogram_dialog.widgets.text import Const
+from aiogram_dialog.widgets.kbd import Select
+from aiogram_dialog.widgets.text import Const, Format
 
+from bot.dialogs.getters import category_getter, page_getter, cat_page_getter
+from bot.dialogs.handlers import choose_categories
 from bot.dialogs.states import Wiki
 
+category_select = Select(
+    Format("{item[0]}"),
+    id="category_select",
+    item_id_getter=lambda item: item[1],
+    items="categories",
+    on_click=choose_categories,
+)
 
-async def go_clicked(callback: CallbackQuery, button: Button,
-                     manager: DialogManager):
-    await callback.message.answer("Going on!")
+page_select = Select(
+    Format("{item[0]}"),
+    id="page_select",
+    item_id_getter=lambda item: item[1],
+    items="pages",
+    on_click=choose_categories,
+)
 
 main_window = Window(
-    Const("Hello, unknown person"),  # just a constant text
-    Button(Const("Useless button"), on_click=go_clicked, id="nothing"),  # button with text and id
-    state=Wiki.main,  # state is used to identify window between dialogs
+    Const("Выберите категорию среди навоза"),
+    category_select,
+    getter=category_getter,
+    state=Wiki.main,
+)
+page_window = Window(
+    Const("Выбрать страницы"),
+    page_select,
+    getter=cat_page_getter,
+    state=Wiki.page,
 )

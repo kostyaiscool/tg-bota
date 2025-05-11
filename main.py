@@ -2,6 +2,9 @@ import threading
 
 from api.__main__ import run_api
 from bot.__main__ import start_bot
+import tracemalloc
+tracemalloc.start()
+
 
 if __name__ == "__main__":
     bot_thread = threading.Thread(target=start_bot, daemon=True)
