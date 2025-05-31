@@ -13,9 +13,9 @@ from schemas.pages import Pages
 
 class PageCRUD:
     @staticmethod
-    async def get_page(session: AsyncSession) -> Pages:
+    async def get_page(session: AsyncSession, page_id: int) -> Pages:
         try:
-            result = await session.execute(select(Page).where(Page.id == Page.id))
+            result = await session.execute(select(Page).where(Page.id == page_id))
             return result.scalar_one()
         except NoResultFound:
             print('Я ЗАПЕР 456 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')

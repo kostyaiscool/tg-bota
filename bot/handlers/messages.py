@@ -1,9 +1,12 @@
-from aiogram import Router
+import asyncio
+
+from aiogram import Router, F, Bot
 from aiogram.filters import Command
 from aiogram.types import Message
 import aiohttp
 from aiogram_dialog import StartMode, DialogManager
 
+from bot import bot
 from bot.dialogs.states import Wiki
 from core import logger
 from schemas.user import TelegramUser
@@ -53,6 +56,49 @@ async def start_command(message: Message):
             await message.answer("Щось пішло не так. Спробуйте ще раз пізніше.")
 
 
-@router.message(Command(commands=["catalog"]))
-async def start_command(message: Message, dialog_manager: DialogManager):
+@router.message(Command(commands=["menu"]))
+async def menu_command(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(Wiki.main, mode=StartMode.RESET_STACK)
+
+@router.message(Command("clear"))
+async def clear_chat(message: Message, bot: Bot):
+    chat_id = message.chat.id
+    from_id = message.message_id
+    chat_type = message.chat.type
+
+    deleted = 0
+    limit = 100
+
+    # Временное сообщение
+    notice = await message.answer("🧹 Очищаю сообщения...")
+
+    for msg_id in range(from_id, from_id - limit, -1):
+        try:
+            msg = await bot.forward_message(chat_id=chat_id, from_chat_id=chat_id, message_id=msg_id)
+            await bot.delete_message(chat_id, msg.message_id)  # Удаляем копию (если удалось)
+            await bot.delete_message(chat_id, msg_id)          # Пытаемся удалить оригинал
+            deleted += 1
+            await asyncio.sleep(0.05)
+        except Exception:
+            # В личке Telegram не даст удалить чужие сообщения (и старые тоже иногда)
+            if chat_type == "private":
+                try:
+                    # Получаем сообщение и удаляем, если оно от бота
+                    original = await bot.get_chat_member(chat_id, bot.id)
+                    msg = await bot.get_chat_message(chat_id, msg_id)
+                    if msg.from_user.id == bot.id:
+                        await bot.delete_message(chat_id, msg_id)
+                        deleted += 1
+                except:
+                    pass
+            continue
+
+    # Пытаемся удалить саму команду и уведомление
+    try:
+        await bot.delete_message(chat_id, message.message_id)
+        await bot.delete_message(chat_id, notice.message_id)
+    except:
+        pass
+
+    # Или отправляем новое сообщение
+    await message.answer(f"✅ Удалено {deleted} сообщений.")

@@ -1,5 +1,7 @@
 import asyncio
 
+from aiogram import Bot
+from aiogram.types import BotCommand
 from aiogram_dialog import setup_dialogs
 from sqlalchemy.util import await_only
 
@@ -13,12 +15,21 @@ dispatcher.include_router(messages_router)
 dispatcher.include_router(dialog)
 setup_dialogs(dispatcher)
 
+async def set_commands(bot: Bot):
+    commands = [
+        BotCommand(command="/start", description="Запустить бота"),
+        BotCommand(command="/menu", description="Отображает главное меню"),
+        BotCommand(command="/clear", description="Круче чем Танос"),
+    ]
+    await bot.set_my_commands(commands)
 async def run_polling() -> None:
+    await set_commands(bot)
     await delete_telegram_webhook()
     await dispatcher.start_polling(bot)
     logger.info("Bot started in long pooling mode")
 
 async def run_webhook() -> None:
+    await set_commands(bot)
     await set_telegram_webhook()
     logger.info("Bot started in Webhook mode")
 

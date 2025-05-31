@@ -1,9 +1,9 @@
 from aiogram_dialog import Window, DialogManager
-from aiogram_dialog.widgets.kbd import Select
+from aiogram_dialog.widgets.kbd import Select, Button
 from aiogram_dialog.widgets.text import Const, Format
 
-from bot.dialogs.getters import category_getter, page_getter, cat_page_getter
-from bot.dialogs.handlers import choose_categories
+from bot.dialogs.getters import category_getter, page_getter, cat_page_getter, pages_getter
+from bot.dialogs.handlers import choose_categories, go_to_categories, go_to_pages, go_to_main
 from bot.dialogs.states import Wiki
 
 category_select = Select(
@@ -23,14 +23,31 @@ page_select = Select(
 )
 
 main_window = Window(
-    Const("Выберите категорию среди навоза"),
-    category_select,
-    getter=category_getter,
+    Const("Добро пожаловаться вам. Служить великий Китай😡"),
+    Button(Const('Категории'), '1', on_click=go_to_categories),
+    Button(Const('Страницы'), '2', on_click=go_to_pages),
+    Button(Const('Поиск'), '3'),
+    Button(Const('Создать'), '4'),
     state=Wiki.main,
 )
+
+category_window = Window(
+    Const("Выберите категорию среди навоза"),
+    Button(Const('Назад'), '2', on_click=go_to_main),
+    category_select,
+    getter=category_getter,
+    state=Wiki.category,
+)
 page_window = Window(
+    Const('Все страницы'),
+    Button(Const('Назад'), '2', on_click=go_to_main),
+    page_select,
+    getter=pages_getter,
+    state=Wiki.page
+)
+cat_page_window = Window(
     Const("Выбрать страницы"),
     page_select,
     getter=cat_page_getter,
-    state=Wiki.page,
+    state=Wiki.cat_page,
 )
