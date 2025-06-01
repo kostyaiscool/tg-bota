@@ -3,7 +3,7 @@ from aiogram_dialog.widgets.kbd import Select, Button
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.getters import category_getter, page_getter, cat_page_getter, pages_getter
-from bot.dialogs.handlers import choose_categories, go_to_categories, go_to_pages, go_to_main
+from bot.dialogs.handlers import choose_categories, go_to_categories, go_to_pages, go_to_main, choose_pages
 from bot.dialogs.states import Wiki
 
 category_select = Select(
@@ -19,7 +19,7 @@ page_select = Select(
     id="page_select",
     item_id_getter=lambda item: item[1],
     items="pages",
-    on_click=choose_categories,
+    on_click=choose_pages,
 )
 
 main_window = Window(

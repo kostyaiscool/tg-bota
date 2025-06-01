@@ -5,3 +5,4 @@ class Wiki(StatesGroup):
     category = State()
     page = State()
     cat_page = State()
+    page_text = State()
