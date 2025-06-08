@@ -28,3 +28,6 @@ async def go_to_pages(callback, button, dialog_manager: DialogManager):
 
 async def go_to_main(callback, button, dialog_manager: DialogManager):
     await dialog_manager.switch_to(Wiki.main)
+
+async def go_to_search(callback, button, dialog_manager: DialogManager):
+    await dialog_manager.switch_to(Wiki.search)

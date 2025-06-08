@@ -6,3 +6,4 @@ class Wiki(StatesGroup):
     page = State()
     cat_page = State()
     page_text = State()
+    search = State()
