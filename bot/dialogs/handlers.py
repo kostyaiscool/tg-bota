@@ -11,14 +11,7 @@ async def choose_categories(callback, button, dialog_manager: DialogManager, ite
 
 async def choose_pages(callback, button, dialog_manager: DialogManager, item_id: str):
     dialog_manager.dialog_data["page_id"] = int(item_id)
-    async with db_helper.session() as session:
-        page = await PageCRUD.get_page(session, int(item_id))
-        await callback.message.answer(
-            f"<b>{page.name}</b>\n\n{page.text}",
-            parse_mode="HTML"
-        )
-
-    # await dialog_manager.switch_to(Wiki.main)
+    await dialog_manager.switch_to(Wiki.page_text)
 
 async def go_to_categories(callback, button, dialog_manager: DialogManager):
     await dialog_manager.switch_to(Wiki.category)

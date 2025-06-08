@@ -51,3 +51,16 @@ cat_page_window = Window(
     getter=cat_page_getter,
     state=Wiki.cat_page,
 )
+show_page_text = Window(
+    Const("Выбрать страницы"),
+    Button(Const('Назад'), '2', on_click=go_to_main),
+    page_select,
+    getter=cat_page_getter,
+    state=Wiki.cat_page,
+)
+page_text_window = Window(
+    Format("<b>{page.name}</b>\n\n{page.text}"),
+    Button(Const("🔙 Назад"), id="back_to_cat", on_click=go_to_categories),
+    getter=page_getter,
+    state=Wiki.page_text
+)
