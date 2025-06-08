@@ -1,6 +1,5 @@
 from aiogram_dialog import DialogManager
 
-from core import logger
 from db import db_helper
 from db.crud.categories import CategoryCRUD
 from db.crud.pages import PageCRUD
@@ -21,26 +20,9 @@ async def page_getter(dialog_manager: DialogManager, **kwargs):
     }
 
 async def cat_page_getter(dialog_manager: DialogManager, **kwargs):
-    category_id = dialog_manager.dialog_data.get("category_id")
-    if not category_id:
-        return {"pages": []}  # гарантуємо, що "pages" завжди є
-
+    category_id = dialog_manager.dialog_data["category_id"]
     async with db_helper.session() as session:
         cat_pages = await PageCRUD.get_cat_pages(session, category_id)
     return {
         "pages": [(page.name, str(page.id)) for page in cat_pages]
     }
-
-    # category_id = dialog_manager.dialog_data.get('selected_category_id')
-    # if not category_id:
-    #     return {"articles": []}
-    #
-    # async with db_helper.session() as session:
-    #     articles = await PageCRUD.get_cat_pages(session, category_id)
-    #     return {
-    #         "articles": [(a.name, a.id) for a in articles],
-    #         "category_name": next(
-    #             (c.name for c in await CategoryCRUD.get_all_categories(session)
-    #              if c.id == category_id), ""
-    #         )
-    #     }
