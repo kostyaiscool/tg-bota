@@ -12,7 +12,7 @@ async def category_getter(dialog_manager: DialogManager, **kwargs):
         "categories": [(category.name, str(category.id)) for category in all_categories]
     }
 
-async def page_getter(dialog_manager: DialogManager, **kwargs):
+async def pages_getter(dialog_manager: DialogManager, **kwargs):
     async with db_helper.session() as session:
         all_pages = await PageCRUD.get_all_pages(session)
     return {
@@ -25,4 +25,12 @@ async def cat_page_getter(dialog_manager: DialogManager, **kwargs):
         cat_pages = await PageCRUD.get_cat_pages(session, category_id)
     return {
         "pages": [(page.name, str(page.id)) for page in cat_pages]
+    }
+
+async def page_getter(dialog_manager: DialogManager, **kwargs):
+    page_id = dialog_manager.dialog_data["page_id"]
+    async with db_helper.session() as session:
+        page = await PageCRUD.get_page(session, page_id)
+    return {
+        "page": page
     }

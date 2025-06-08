@@ -7,8 +7,17 @@ from db.crud.pages import PageCRUD
 
 async def choose_categories(callback, button, dialog_manager: DialogManager, item_id: str):
     dialog_manager.dialog_data["category_id"] = int(item_id)
+    await dialog_manager.switch_to(Wiki.cat_page)
+
+async def choose_pages(callback, button, dialog_manager: DialogManager, item_id: str):
+    dialog_manager.dialog_data["page_id"] = int(item_id)
+    await dialog_manager.switch_to(Wiki.page_text)
+
+async def go_to_categories(callback, button, dialog_manager: DialogManager):
+    await dialog_manager.switch_to(Wiki.category)
+
+async def go_to_pages(callback, button, dialog_manager: DialogManager):
     await dialog_manager.switch_to(Wiki.page)
-    # async with db_helper.session() as session:
-    #     cat_pages = await PageCRUD.get_cat_pages(session, int(item_id))
-    #     await callback.answer(cat_pages)
-    # await callback.answer(f'вы выбрали категорию среди роз: {item_id}')
+
+async def go_to_main(callback, button, dialog_manager: DialogManager):
+    await dialog_manager.switch_to(Wiki.main)
