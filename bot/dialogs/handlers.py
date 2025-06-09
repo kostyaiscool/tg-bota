@@ -11,14 +11,7 @@ async def choose_categories(callback, button, dialog_manager: DialogManager, ite
 
 async def choose_pages(callback, button, dialog_manager: DialogManager, item_id: str):
     dialog_manager.dialog_data["page_id"] = int(item_id)
-    async with db_helper.session() as session:
-        page = await PageCRUD.get_page(session, int(item_id))
-        await callback.message.answer(
-            f"<b>{page.name}</b>\n\n{page.text}",
-            parse_mode="HTML"
-        )
-
-    # await dialog_manager.switch_to(Wiki.main)
+    await dialog_manager.switch_to(Wiki.page_text)
 
 async def go_to_categories(callback, button, dialog_manager: DialogManager):
     await dialog_manager.switch_to(Wiki.category)
@@ -31,3 +24,11 @@ async def go_to_main(callback, button, dialog_manager: DialogManager):
 
 async def go_to_search(callback, button, dialog_manager: DialogManager):
     await dialog_manager.switch_to(Wiki.search)
+
+async def find_page(dialog_manager: DialogManager, *args):
+    print(args)
+    print('База Штрафостана')
+    print(dialog_manager.find("search_input").get_value())
+    dialog_manager.dialog_data["search_input"] = dialog_manager.find("search_input").get_value()
+    print(dialog_manager.dialog_data["search input"])
+    await dialog_manager.switch_to(Wiki.search_page)

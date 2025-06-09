@@ -60,7 +60,7 @@ class PageCRUD:
     async def get_page_name(session: AsyncSession, page_name: str) -> Pages:
         try:
             result = await session.execute(select(Page).where(Page.name == page_name))
-            return result.scalar_one()
+            return result.scalars().all()
         except NoResultFound:
             print('Я ЗАПЕР 456 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
             return None
