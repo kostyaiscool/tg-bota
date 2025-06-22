@@ -7,7 +7,7 @@ import aiohttp
 from aiogram_dialog import StartMode, DialogManager
 
 from bot import bot
-from bot.dialogs.states import Wiki
+from bot.dialogs.states import Wiki, Creation
 from core import logger
 from schemas.user import TelegramUser
 
@@ -59,6 +59,7 @@ async def start_command(message: Message):
 @router.message(Command(commands=["menu"]))
 async def menu_command(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(Wiki.main, mode=StartMode.RESET_STACK)
+    await dialog_manager.start(Creation.create_name)
 
 @router.message(Command("clear"))
 async def clear_chat(message: Message, bot: Bot):

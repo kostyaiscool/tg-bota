@@ -57,10 +57,13 @@ class PageCRUD:
             return None
 
     @staticmethod
-    async def get_page_name(session: AsyncSession, page_name: str) -> Pages:
+    async def get_page_name(session: AsyncSession, page_name: str) -> list[Page]:
         try:
-            result = await session.execute(select(Page).where(Page.name == page_name))
+            query = select(Page).where(
+                Page.name.ilike(f"%{page_name}%")  # ищем по подстроке, нечувствительно к регистру
+            )
+            result = await session.execute(query)
             return result.scalars().all()
-        except NoResultFound:
-            print('Я ЗАПЕР 456 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
-            return None
+        except Exception as e:
+            print("Ошибка поиска страницы:", e)
+            return []

@@ -7,13 +7,14 @@ from sqlalchemy.util import await_only
 
 from api.utils.set_telegram_webhook import set_telegram_webhook, delete_telegram_webhook
 from bot import dispatcher, bot
-from bot.dialogs import dialog
+from bot.dialogs import dialog, create_dialog
 # from bot.dialogs import wiki_dialog
 from core import settings, RunningMode, logger
 from bot.handlers.messages import router as messages_router
 
 dispatcher.include_router(messages_router)
 dispatcher.include_router(dialog)
+dispatcher.include_router(create_dialog)
 # for dialog in setup_dialogs():
 #     dispatcher.include_router(dialog)
 setup_dialogs(dispatcher)
