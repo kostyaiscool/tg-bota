@@ -1,5 +1,7 @@
 from aiogram_dialog import DialogManager
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.dialogs.states import Wiki
 from db import db_helper
 from db.crud.categories import CategoryCRUD
 from db.crud.pages import PageCRUD
@@ -42,4 +44,19 @@ async def page_search_getter(dialog_manager: DialogManager, **kwargs):
         pages = await PageCRUD.get_page_name(session, search)
     return {
         "pages": [(page.name, str(page.id)) for page in pages]
+    }
+async def confirm(callback, button, dialog_manager: DialogManager):
+    name = dialog_manager.dialog_data.get("name_input", "")
+    text = dialog_manager.dialog_data.get("text_input", "")
+    category_id = dialog_manager.dialog_data.get("category_id", "")
+    print(type(category_id), '<- Я геометрию ненавижу')
+    # await PageCRUD.create_or_update(AsyncSession, [name, text, category_id])
+    await dialog_manager.switch_to(Wiki.main)
+
+async def new_page_getter(dialog_manager: DialogManager, **kwargs):
+    page_id = dialog_manager.dialog_data.get("new_page", "")
+    async with db_helper.session() as session:
+        page = await PageCRUD.get_page(session, page_id)
+    return {
+        "page": page
     }

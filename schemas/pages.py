@@ -13,3 +13,8 @@ class Pages(BaseModel):
     dislikes: int
     categories: Categories
     author: TelegramUser
+
+class PageCreate(BaseModel):
+    name: str
+    text: str
+    category: Categories

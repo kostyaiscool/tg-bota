@@ -3,7 +3,8 @@ from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.kbd import Select, Button
 from aiogram_dialog.widgets.text import Const, Format
 
-from bot.dialogs.getters import category_getter, page_getter, cat_page_getter, pages_getter, page_search_getter
+from bot.dialogs.getters import category_getter, page_getter, cat_page_getter, pages_getter, page_search_getter, \
+    confirm, new_page_getter
 from bot.dialogs.handlers import choose_categories, go_to_categories, go_to_pages, go_to_main, choose_pages, \
     go_to_search, find_page, create_name, create_text, choose_category
 from bot.dialogs.states import Wiki, Creation
@@ -105,6 +106,7 @@ choose_category_window = Window(
 preview_window = Window(
     Const("Просмотр"),
     Format("<b>{page.name}</b>\n\n{page.text}"),
-    getter=page_getter,
+    Button(Const("Подтвердить"), id="confirm", on_click=confirm),
+    getter=new_page_getter,
     state=Creation.preview
 )

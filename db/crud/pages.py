@@ -8,7 +8,7 @@ from db.crud.categories import CategoryCRUD
 from db.models.categories import Category
 from db.models.pages import Page
 from schemas.categories import Categories
-from schemas.pages import Pages
+from schemas.pages import Pages, PageCreate
 
 
 class PageCRUD:
@@ -22,7 +22,7 @@ class PageCRUD:
             return None
 
     @staticmethod
-    async def create_or_update(session: AsyncSession, page_data: Pages):
+    async def create_or_update(session: AsyncSession, page_data: PageCreate):
         page = await PageCRUD.get_page(session, page_data.id)
 
         if page:

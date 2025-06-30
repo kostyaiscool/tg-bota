@@ -1,8 +1,11 @@
 from aiogram_dialog import DialogManager
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dialogs.states import Wiki, Creation
 from db import db_helper
 from db.crud.pages import PageCRUD
+from db.models.pages import Page
+from schemas.pages import Pages, PageCreate
 
 
 async def choose_categories(callback, button, dialog_manager: DialogManager, item_id: str):
@@ -50,8 +53,13 @@ async def create_text(message, dialog, dialog_manager: DialogManager):
 
 
 async def choose_category(callback, button, dialog_manager: DialogManager, item_id):
-    dialog_manager.dialog_data["category_id"] = int(item_id)
-    PageCRUD.create_or_update()
+    # dialog_manager.dialog_data["category_id"] = int(item_id)
+    name = dialog_manager.dialog_data.get("name_input", "")
+    text = dialog_manager.dialog_data.get("text_input", "")
+    category_id = int(item_id)
+    async with db_helper.session() as session:
+        result = await PageCRUD.create_or_update(session, PageCreate((name, text, category_id))на)
+    dialog_manager.dialog_data["new_page"] = result.id
     await dialog_manager.switch_to(Creation.preview)
 
 
@@ -73,3 +81,4 @@ async def preview(dialog_manager: DialogManager, message):
 
     # После предпросмотра можешь перевести в состояние подтверждения/сохранения
     # await dialog_manager.switch_to(Wiki.confirm)
+
