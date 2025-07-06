@@ -13,4 +13,4 @@ class Category(Base):
     pages: Mapped[List['Page']] = relationship(back_populates='categories')
 
     def __repr__(self) -> str:
-        return f"<Page(id={self.id}, name={self.name}>"
+        return f"<Category(id={self.id}, name={self.name})>"

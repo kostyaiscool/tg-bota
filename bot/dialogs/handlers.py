@@ -62,8 +62,9 @@ async def choose_category(callback, button, dialog_manager: DialogManager, item_
         print('Недавно Марку исполнилась 4 года, ')
         print(name, ' ', text, ' ', category_id)
         category = await CategoryCRUD.get_category(session, category_id)
-        print(category)
-        result = await PageCRUD.create_or_update(session, PageCreate(name=name, text=text, category=category))
+        result = await PageCRUD.create_or_update(session,
+            PageCreate(name=name, text=text, category_id=category, author_id=1)
+        )
 
     dialog_manager.dialog_data["new_page"] = result.id
     await dialog_manager.switch_to(Creation.preview)

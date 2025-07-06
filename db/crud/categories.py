@@ -10,13 +10,15 @@ from schemas.categories import Categories
 
 class CategoryCRUD:
     @staticmethod
-    async def get_category(session: AsyncSession, category_id: int) -> Categories:
+    async def get_category(session: AsyncSession, category_id: int) -> int | None:
         try:
             result = await session.execute(select(Category).where(Category.id == category_id))
-            return result.scalar_one()
+            category: Category = result.scalar_one()
+            return category.id
         except NoResultFound:
-            print('Я ЗАПЕР 500 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
+            print('Категория не найдена')  # Здесь можно логировать, а не писать трэш :)
             return None
+
 
     @staticmethod
     async def create_or_update(session: AsyncSession, category_data: Categories):

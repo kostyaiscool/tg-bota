@@ -17,4 +17,5 @@ class Pages(BaseModel):
 class PageCreate(BaseModel):
     name: str
     text: str
-    category: Categories
+    category_id: int
+    author_id: int
