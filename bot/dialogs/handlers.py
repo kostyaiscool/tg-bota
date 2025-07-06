@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dialogs.states import Wiki, Creation
 from db import db_helper
+from db.crud.categories import CategoryCRUD
 from db.crud.pages import PageCRUD
 from db.models.pages import Page
 from schemas.pages import Pages, PageCreate
@@ -58,7 +59,12 @@ async def choose_category(callback, button, dialog_manager: DialogManager, item_
     text = dialog_manager.dialog_data.get("text_input", "")
     category_id = int(item_id)
     async with db_helper.session() as session:
-        result = await PageCRUD.create_or_update(session, PageCreate((name, text, category_id))на)
+        print('Недавно Марку исполнилась 4 года, ')
+        print(name, ' ', text, ' ', category_id)
+        category = await CategoryCRUD.get_category(session, category_id)
+        print(category)
+        result = await PageCRUD.create_or_update(session, PageCreate(name=name, text=text, category=category))
+
     dialog_manager.dialog_data["new_page"] = result.id
     await dialog_manager.switch_to(Creation.preview)
 

@@ -23,7 +23,11 @@ class PageCRUD:
 
     @staticmethod
     async def create_or_update(session: AsyncSession, page_data: PageCreate):
-        page = await PageCRUD.get_page(session, page_data.id)
+        # Попробуем найти по name (или другому уникальному полю)
+        result = await session.execute(
+            select(Page).where(Page.name == page_data.name)
+        )
+        page = result.scalar_one_or_none()
 
         if page:
             for key, value in page_data.dict().items():
