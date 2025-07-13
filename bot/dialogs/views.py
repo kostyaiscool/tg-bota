@@ -4,9 +4,9 @@ from aiogram_dialog.widgets.kbd import Select, Button
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.getters import category_getter, page_getter, cat_page_getter, pages_getter, page_search_getter, \
-    confirm, new_page_getter
+    confirm, new_page_getter, update_page_getter
 from bot.dialogs.handlers import choose_categories, go_to_categories, go_to_pages, go_to_main, choose_pages, \
-    go_to_search, find_page, create_name, create_text, choose_category
+    go_to_search, find_page, create_name, create_text, choose_category, search_name
 from bot.dialogs.states import Wiki, Creation
 
 category_select = Select(
@@ -78,6 +78,7 @@ show_page_text = Window(
 page_text_window = Window(
     Format("<b>{page.name}</b>\n\n{page.text}"),
     Button(Const("🔙 Назад"), id="back_to_cat", on_click=go_to_categories),
+    Button(Const("Редактировать"), id="edit", on_click=search_name),
     getter=page_getter,
     state=Wiki.page_text
 )
@@ -109,4 +110,16 @@ preview_window = Window(
     Button(Const("Подтвердить"), id="confirm", on_click=confirm),
     getter=new_page_getter,
     state=Creation.preview
+)
+search_window = Window(
+    Const("Редактирование"),
+    MessageInput(create_text),
+    state=Creation.search,
+    getter=update_page_getter,
+)
+editing_window = Window(
+    Const("Редактирование"),
+    MessageInput(create_text),
+    state=Creation.editing,
+    getter=update_page_getter,
 )

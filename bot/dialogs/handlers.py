@@ -5,6 +5,7 @@ from bot.dialogs.states import Wiki, Creation
 from db import db_helper
 from db.crud.categories import CategoryCRUD
 from db.crud.pages import PageCRUD
+from db.crud.user import TelegramUserCRUD
 from db.models.pages import Page
 from schemas.pages import Pages, PageCreate
 
@@ -62,12 +63,12 @@ async def choose_category(callback, button, dialog_manager: DialogManager, item_
         print('Недавно Марку исполнилась 4 года, ')
         print(name, ' ', text, ' ', category_id)
         category = await CategoryCRUD.get_category(session, category_id)
-        result = await PageCRUD.create_or_update(session,
-            PageCreate(name=name, text=text, category_id=category, author_id=1)
+        new_page, status = await PageCRUD.create_or_update(session,
+            PageCreate(name=name, text=text, category_id=category, author_id=6298150733)
         )
-
-    dialog_manager.dialog_data["new_page"] = result.id
-    await dialog_manager.switch_to(Creation.preview)
+    if not status:
+        dialog_manager.dialog_data["new_page"] = new_page.id
+        await dialog_manager.switch_to(Creation.preview)
 
 
 async def preview(dialog_manager: DialogManager, message):
@@ -88,4 +89,7 @@ async def preview(dialog_manager: DialogManager, message):
 
     # После предпросмотра можешь перевести в состояние подтверждения/сохранения
     # await dialog_manager.switch_to(Wiki.confirm)
-
+async def search_name(message, dialog, dialog_manager: DialogManager):
+    query = message.text
+    dialog_manager.dialog_data["search_name"] = query
+    await dialog_manager.switch_to(Creation.editing)

@@ -28,18 +28,20 @@ class PageCRUD:
             select(Page).where(Page.name == page_data.name)
         )
         page = result.scalar_one_or_none()
-
+        status = None
         if page:
             for key, value in page_data.dict().items():
                 setattr(page, key, value)
+            status = True
         else:
             page = Page(**page_data.dict())
             session.add(page)
+            status = False
 
         await session.commit()
         await session.refresh(page)
 
-        return page
+        return page, status
 
     @staticmethod
     async def get_all_pages(session: AsyncSession) -> Pages:
