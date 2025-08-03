@@ -37,18 +37,19 @@ class CategoryWindow(Window):
             "categories": [(category.name, str(category.id)) for category in all_categories]
             }
 
+
 class CatPageWindow(Window):
     def __init__(self):
-        self.category_select = Select(
+        self.page_select = Select(
             Format("{item[0]}"),
-            id="category_select",
+            id="page_select",
             item_id_getter=lambda item: item[1],
-            items="categories",
-            on_click=self.choose_categories,
+            items="pages",
+            on_click=self.choose_pages,
         )
         super().__init__(
             Const("Выбрать страницы"),
-            self.category_select,
+            self.page_select,
             getter=self.cat_page_getter,
             state=Wiki.cat_page,
         )
@@ -61,9 +62,10 @@ class CatPageWindow(Window):
         return {
             "pages": [(page.name, str(page.id)) for page in cat_pages]
         }
-    async def choose_categories(self, callback, button, dialog_manager: DialogManager, item_id: str):
-        dialog_manager.dialog_data["category_id"] = int(item_id)
-        await dialog_manager.switch_to(Wiki.cat_page)
+
+    async def choose_pages(self, callback, button, dialog_manager: DialogManager, item_id: str):
+        dialog_manager.dialog_data["page_id"] = int(item_id)
+        await dialog_manager.switch_to(Wiki.page_text)
 
 category_window = CategoryWindow()
 cat_page_window = CatPageWindow()
