@@ -1,4 +1,4 @@
-from typing import Mapping
+from typing import Mapping, Sequence
 
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
@@ -53,13 +53,16 @@ class PageCRUD:
             return None
 
     @staticmethod
-    async def get_cat_pages(session: AsyncSession, category_id: int) -> Pages:
+    async def get_cat_pages(session: AsyncSession, category_id: int) -> Sequence[Page] | None:
         try:
-            category = await CategoryCRUD.get_category(session, category_id)
-            result = await session.execute(select(Page).where(category == Page.categories))
-            return result.scalars().all()
+            stmt = select(Page).where(Page.category_id == category_id)
+            result = await session.execute(stmt)
+            return result.scalars().all()  # Возвращаем список Page
         except NoResultFound:
-            print('Я ЗАПЕР 456 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
+            print('Нет результатов по категории.')
+            return None
+        except Exception as e:
+            print('Ошибка при получении страниц по категории:', e)
             return None
 
     @staticmethod
