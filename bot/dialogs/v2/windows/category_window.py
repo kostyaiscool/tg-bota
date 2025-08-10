@@ -1,5 +1,5 @@
 from aiogram_dialog import Window, DialogManager
-from aiogram_dialog.widgets.kbd import Button, Select
+from aiogram_dialog.widgets.kbd import Button, Select, Back
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.v2.states import Wiki
@@ -19,7 +19,7 @@ class CategoryWindow(Window):
             )
         super().__init__(
             Const("Выберите категорию среди навоза"),
-            # Button(Const('Назад'), '2', on_click=go_to_main),
+            Button(Const('Назад'), '2', on_click=self.go_to_main),
             self.category_select,
             getter=self.category_getter,
             state=Wiki.category,
@@ -37,6 +37,9 @@ class CategoryWindow(Window):
             "categories": [(category.name, str(category.id)) for category in all_categories]
             }
 
+    async def go_to_main(self, callback, button, dialog_manager: DialogManager):
+        await dialog_manager.switch_to(Wiki.main)
+
 
 class CatPageWindow(Window):
     def __init__(self):
@@ -49,6 +52,7 @@ class CatPageWindow(Window):
         )
         super().__init__(
             Const("Выбрать страницы"),
+            Button(Const('Назад'), '2', on_click=self.go_to_cat_select),
             self.page_select,
             getter=self.cat_page_getter,
             state=Wiki.cat_page,
@@ -58,7 +62,6 @@ class CatPageWindow(Window):
         category_id = dialog_manager.dialog_data.get("category_id", "")
         async with db_helper.session() as session:
             cat_pages = await PageCRUD.get_cat_pages(session, category_id)
-        print("2022-ицированние началось ", cat_pages, type(cat_pages))
         return {
             "pages": [(page.name, str(page.id)) for page in cat_pages]
         }
@@ -66,6 +69,9 @@ class CatPageWindow(Window):
     async def choose_pages(self, callback, button, dialog_manager: DialogManager, item_id: str):
         dialog_manager.dialog_data["page_id"] = int(item_id)
         await dialog_manager.switch_to(Wiki.page_text)
+
+    async def go_to_cat_select(self, callback, button, dialog_manager: DialogManager):
+        await dialog_manager.switch_to(Wiki.category)
 
 category_window = CategoryWindow()
 cat_page_window = CatPageWindow()

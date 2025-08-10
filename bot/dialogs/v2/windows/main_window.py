@@ -2,7 +2,7 @@ from aiogram_dialog import Window
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const
 
-from bot.dialogs.v2.states import Wiki
+from bot.dialogs.v2.states import Wiki, Creation
 
 
 class MainWindow(Window):
@@ -22,7 +22,7 @@ class MainWindow(Window):
         await dialog_manager.switch_to(Wiki.category)
 
     async def go_to_search(self, callback, button, dialog_manager):
-        await dialog_manager.switch_to(Wiki.category)
+        await dialog_manager.switch_to(Wiki.search)
 
 
 main_window = MainWindow()
