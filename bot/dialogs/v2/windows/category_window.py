@@ -1,5 +1,5 @@
 from aiogram_dialog import Window, DialogManager
-from aiogram_dialog.widgets.kbd import Button, Select, Back
+from aiogram_dialog.widgets.kbd import Button, Select, Back, ScrollingGroup
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.v2.states import Wiki
@@ -17,10 +17,16 @@ class CategoryWindow(Window):
                 items="categories",
                 on_click=self.choose_categories,
             )
-        super().__init__(
-            Const("Выберите категорию среди навоза"),
-            Button(Const('Назад'), '2', on_click=self.go_to_main),
+        self.category_scrolling = ScrollingGroup(
             self.category_select,
+            id="categories",
+            width=1,
+            height=6,
+        )
+        super().__init__(
+            Const("Выберите категорию среди розию"),
+            Button(Const('Назад'), '2', on_click=self.go_to_main),
+            self.category_scrolling,
             getter=self.category_getter,
             state=Wiki.category,
 
@@ -50,10 +56,16 @@ class CatPageWindow(Window):
             items="pages",
             on_click=self.choose_pages,
         )
+        self.page_scrolling = ScrollingGroup(
+            self.page_select,
+            id="catpages",
+            width=1,
+            height=6,
+        )
         super().__init__(
             Const("Выбрать страницы"),
             Button(Const('Назад'), '2', on_click=self.go_to_cat_select),
-            self.page_select,
+            self.page_scrolling,
             getter=self.cat_page_getter,
             state=Wiki.cat_page,
         )

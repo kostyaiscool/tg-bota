@@ -1,6 +1,6 @@
 from typing import Mapping, Sequence
 
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -43,13 +43,17 @@ class PageCRUD:
 
         return page, status
 
+    from sqlalchemy import select, desc
+
     @staticmethod
     async def get_all_pages(session: AsyncSession) -> Pages:
         try:
-            result = await session.execute(select(Page))
+            result = await session.execute(
+                select(Page).order_by(desc(Page.id))  # новые первыми
+            )
             return result.scalars().all()
         except NoResultFound:
-            print('Я ЗАПЕР 500 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
+            print("Я ЗАПЕР 500 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ...")
             return None
 
     @staticmethod

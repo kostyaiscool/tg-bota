@@ -12,17 +12,20 @@ class MainWindow(Window):
                          Button(Const('Категории'), '1', on_click=self.go_to_categories),
                          Button(Const('Страницы'), '2', on_click=self.go_to_pages),
                          Button(Const('Поиск'), '3', on_click=self.go_to_search),
-                         Button(Const('Создать'), '4'),
+                         Button(Const('Создать'), '4', on_click=self.go_to_creation),
                          state=Wiki.main, )
 
     async def go_to_categories(self, callback, button, dialog_manager):
         await dialog_manager.switch_to(Wiki.category)
 
     async def go_to_pages(self, callback, button, dialog_manager):
-        await dialog_manager.switch_to(Wiki.category)
+        await dialog_manager.switch_to(Wiki.page)
 
     async def go_to_search(self, callback, button, dialog_manager):
         await dialog_manager.switch_to(Wiki.search)
+
+    async def go_to_creation(self, callback, button, dialog_manager):
+        await dialog_manager.start(Creation.create_name)
 
 
 main_window = MainWindow()

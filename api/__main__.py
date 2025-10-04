@@ -1,6 +1,6 @@
 import uvicorn
 
-from api.admin.models import UserAdmin
+from api.admin.models import UserAdmin, PageAdmin, CategoryAdmin
 from core import settings
 from api import app, admin_app
 from api.v1.endpoints.webhook import router as webhook_router
@@ -9,6 +9,8 @@ from api.v1.endpoints.user import router as user_router
 app.include_router(webhook_router)
 app.include_router(user_router)
 admin_app.add_view(UserAdmin)
+admin_app.add_view(PageAdmin)
+admin_app.add_view(CategoryAdmin)
 
 for route in app.routes:
     print(route.path, route.name)

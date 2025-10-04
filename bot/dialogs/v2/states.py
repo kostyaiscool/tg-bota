@@ -14,5 +14,5 @@ class Creation(StatesGroup):
     create_text = State()
     choose_category = State()
     preview = State()
-    search = State()
+    # search = State()
     editing = State()

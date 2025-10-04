@@ -20,6 +20,7 @@ class User(Base):
     pages: Mapped[List['Page']] = relationship(back_populates='author')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+    roles: Mapped['Role'] = relationship(back_populates='users')
 
     def __repr__(self) -> str:
         return f"<TelegramUser(id={self.id}, username={self.username}, is_premium={self.is_premium})>"

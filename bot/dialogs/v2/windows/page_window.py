@@ -1,6 +1,6 @@
 from aiogram_dialog import Window, DialogManager, StartMode
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Button, Select
+from aiogram_dialog.widgets.kbd import Button, Select, ScrollingGroup
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.v2.states import Wiki, Creation
@@ -17,10 +17,16 @@ class PageWindow(Window):
             items="pages",  # ключ из getter'а
             on_click=self.choose_pages,
         )
+        self.page_scrolling = ScrollingGroup(
+            self.page_select,
+            id="pages",
+            width=1,
+            height=6,
+        )
         super().__init__(
             Const('Все страницы'),
             Button(Const('Назад'), '2', on_click=self.go_to_main),
-            self.page_select,
+            self.page_scrolling,
             getter=self.pages_getter,
             state=Wiki.page
         )
@@ -51,6 +57,7 @@ class PageTextWindow(Window):
         )
         super().__init__(
             Format("<b>{page.name}</b>\n\n{page.text}"),
+            Button(Const('Редактировать'), '7'),
             Button(Const('Назад к категориям'), '2', on_click=self.go_to_categories),
             # Button(Const("Редактировать"), id="edit", on_click=search_name),
             getter=self.page_getter,
@@ -103,8 +110,8 @@ class PageSearchWindow(Window):
         query = message.text
         dialog_manager.dialog_data["search_input"] = query
 
-        await dialog_manager.start(Wiki.search_page, mode=StartMode.RESET_STACK)
-
+        # await dialog_manager.start(Wiki.search_page, mode=StartMode.RESET_STACK)
+        await dialog_manager.switch_to(Wiki.search_page)
 
 class PageSearchedWindow(Window):
     def __init__(self):
@@ -115,9 +122,15 @@ class PageSearchedWindow(Window):
             items="pages",  # ключ из getter'а
             on_click=self.choose_pages,
         )
+        self.page_scrolling = ScrollingGroup(
+            self.page_select,
+            id="pages",
+            width=1,
+            height=6,
+        )
         super().__init__(
             Const("Результаты поиска"),
-            self.page_select,
+            self.page_scrolling,
             getter=self.page_search_getter,
             state=Wiki.search_page,
         )
@@ -141,9 +154,10 @@ class PageSearchedWindow(Window):
         # search = "Два каннибала пили, а закусил только один"
         async with db_helper.session() as session:
             pages = await PageCRUD.get_page_name(session, search)
-        return {
-            "pages": [(page.name, str(page.id)) for page in pages]
-        }
+        # if not pages:
+        #     return {"pages": "Страниц не найдено, лее брат:("}
+        # else:
+        return {"pages": [(page.name, str(page.id)) for page in pages]}
 
 
 page_window = PageWindow()
