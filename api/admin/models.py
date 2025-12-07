@@ -1,5 +1,6 @@
 from sqladmin import ModelView
 
+from db.models import Role, Permission
 from db.models.categories import Category
 from db.models.pages import Page
 from db.models.user import User
@@ -36,3 +37,11 @@ class PageAdmin(ModelView, model=Page):
 class CategoryAdmin(ModelView, model=Category):
     column_list = ['id', 'name']
     form_columns = ['name']
+
+class RoleAdmin(ModelView, model=Role):
+    column_list = ['id', 'name', 'desc', 'users', 'permissions']
+    form_columns = ['name', 'desc', 'permissions']
+
+class PermissionAdmin(ModelView, model=Permission):
+    column_list = ['id', 'name', 'roles']
+    form_columns = ['name', ]

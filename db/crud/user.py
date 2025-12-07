@@ -21,15 +21,18 @@ class TelegramUserCRUD:
     @staticmethod
     async def create_or_update(session: AsyncSession, user_data: TelegramUser):
         user = await TelegramUserCRUD.get_user(session, user_data.id)
+        is_new = None
 
         if user:
+            is_new = False
             for key, value in user_data.dict().items():
                 setattr(user, key, value)
         else:
+            is_new = True
             user = User(**user_data.dict())
             session.add(user)
 
         await session.commit()
         await session.refresh(user)
 
-        return user
+        return user, is_new

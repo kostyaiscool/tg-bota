@@ -4,6 +4,7 @@ from aiogram_dialog.widgets.kbd import Button, Select, ScrollingGroup
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.v2.states import Wiki, Creation
+from bot.utils.permissions import require_role
 from db import db_helper
 from db.crud.categories import CategoryCRUD
 from db.crud.pages import PageCRUD
@@ -19,6 +20,7 @@ class CreateNameWindow(Window):
             state=Creation.create_name,
         )
 
+    @require_role("editor")
     async def create_name(self, message, dialog, dialog_manager: DialogManager):
         query = message.text
         dialog_manager.dialog_data["name_input"] = query

@@ -5,17 +5,20 @@ from aiogram.filters import Command
 from aiogram.types import Message
 import aiohttp
 from aiogram_dialog import StartMode, DialogManager
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot import bot
 from bot.dialogs.v2.states import Wiki
+from bot.utils.permissions import require_role
 # from bot.dialogs.states import Wiki, Creation
 from core import logger
+from db.crud.user import TelegramUserCRUD
 from schemas.user import TelegramUser
 
 router = Router()
 
 @router.message(Command(commands=["start"]))
-async def start_command(message: Message):
+async def start_command(message: Message, db: AsyncSession):
     """Обробник команди /start."""
     if message.from_user is None:
         return
@@ -31,32 +34,15 @@ async def start_command(message: Message):
         is_bot=message.from_user.is_bot
     )
 
-    # Відправляємо POST-запит до FastAPI ендпоінту
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(
-                "http://localhost:8000/add_user",
-                json=user_data.dict()
-            ) as response:
-                if response.status != 200:
-                    logger.error(f"Failed to add user: {await response.text()}")
-                    await message.answer("Щось пішло не так. Спробуйте ще раз пізніше.")
-                    return
-
-                # Отримуємо відповідь від API
-                response_data = await response.json()
-                is_new_user = response_data["is_new_user"]
-
+    user, is_new_user = await TelegramUserCRUD.create_or_update(db, user_data)
                 # Відправляємо різні повідомлення в залежності від статусу
-                if is_new_user:
-                    await message.answer(f"Привіт, {message.from_user.first_name}! Ти успішно зареєстрований у базі. 🚀")
-                else:
-                    await message.answer(f"Раді знову тебе бачити, {message.from_user.first_name}! 🎉")
-        except Exception as e:
-            logger.error(f"Error while adding user: {e}")
-            await message.answer("Щось пішло не так. Спробуйте ще раз пізніше.")
+    if is_new_user:
+        await message.answer(f"Привіт, {message.from_user.first_name}! Ти успішно зареєстрований у базі. 🚀")
+    else:
+        await message.answer(f"Раді знову тебе бачити, {message.from_user.first_name}! 🎉")
 
 
+@require_role("YaPeterGriffin")
 @router.message(Command(commands=["menu"]))
 async def menu_command(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(Wiki.main, mode=StartMode.RESET_STACK)
