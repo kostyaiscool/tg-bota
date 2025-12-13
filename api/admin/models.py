@@ -1,5 +1,5 @@
 from sqladmin import ModelView
-
+from db.models import user_role
 from db.models import Role, Permission
 from db.models.categories import Category
 from db.models.pages import Page
@@ -28,6 +28,7 @@ class UserAdmin(ModelView, model=User):
         User.is_bot,
         User.created_at,
         User.updated_at,
+        User.roles,
     ]
 
 class PageAdmin(ModelView, model=Page):
