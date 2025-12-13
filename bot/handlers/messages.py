@@ -12,13 +12,14 @@ from bot.dialogs.v2.states import Wiki
 from bot.utils.permissions import require_role
 # from bot.dialogs.states import Wiki, Creation
 from core import logger
+from db import db_helper
 from db.crud.user import TelegramUserCRUD
 from schemas.user import TelegramUser
 
 router = Router()
 
 @router.message(Command(commands=["start"]))
-async def start_command(message: Message, db: AsyncSession):
+async def start_command(message: Message):
     """Обробник команди /start."""
     if message.from_user is None:
         return
@@ -34,7 +35,8 @@ async def start_command(message: Message, db: AsyncSession):
         is_bot=message.from_user.is_bot
     )
 
-    user, is_new_user = await TelegramUserCRUD.create_or_update(db, user_data)
+    async with db_helper.session() as session:
+        user, is_new_user = await TelegramUserCRUD.create_or_update(session, user_data)
                 # Відправляємо різні повідомлення в залежності від статусу
     if is_new_user:
         await message.answer(f"Привіт, {message.from_user.first_name}! Ти успішно зареєстрований у базі. 🚀")

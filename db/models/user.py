@@ -25,8 +25,12 @@ class User(Base):
     roles: Mapped[List["Role"]] = relationship(
         secondary="user_role",
         back_populates="users",
+        lazy="selectin",
     )
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    def has_role(self, role_name):
+        return any(role.name == role_name for role in self.roles)
 

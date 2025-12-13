@@ -79,7 +79,7 @@ def require_role(role: str):
             print(type(args[1]))
             user_id = args[1].from_user.id
             async with db_helper.session() as session:
-                result = await TelegramUserCRUD.has_role(session, user_id, "editor")
+                result = await TelegramUserCRUD.has_role(session, "editor", user_id)
             print(result)
             # print(type(args[0]))
                 # user = arg.get('from_user')
