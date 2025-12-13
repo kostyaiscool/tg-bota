@@ -3,6 +3,7 @@ from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const
 
 from bot.dialogs.v2.states import Wiki, Creation
+from bot.utils.permissions import require_role
 
 
 class MainWindow(Window):
@@ -24,6 +25,7 @@ class MainWindow(Window):
     async def go_to_search(self, callback, button, dialog_manager):
         await dialog_manager.switch_to(Wiki.search)
 
+    @require_role("editor")
     async def go_to_creation(self, callback, button, dialog_manager):
         await dialog_manager.start(Creation.create_name)
 

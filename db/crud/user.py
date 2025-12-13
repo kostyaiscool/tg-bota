@@ -36,3 +36,16 @@ class TelegramUserCRUD:
         await session.refresh(user)
 
         return user, is_new
+
+    @staticmethod
+    async def has_role(session: AsyncSession, role_name: str, user_id: int) -> bool:
+        user = await TelegramUserCRUD.get_user(session, user_id)
+        return any(role.name == role_name for role in user.roles)
+
+    @staticmethod
+    async def has_permission(session: AsyncSession, perm_name: str, user_id: int) -> bool:
+        user = await TelegramUserCRUD.get_user(session, user_id)
+        for role in user.roles:
+            if any(permission.name == perm_name for permission in role.permission):
+                return True
+        return False

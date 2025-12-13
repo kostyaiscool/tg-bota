@@ -20,7 +20,7 @@ class CreateNameWindow(Window):
             state=Creation.create_name,
         )
 
-    @require_role("editor")
+    # @require_role("editor")
     async def create_name(self, message, dialog, dialog_manager: DialogManager):
         query = message.text
         dialog_manager.dialog_data["name_input"] = query

@@ -30,11 +30,3 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
 
-    def has_role(self, role_name: str) -> bool:
-        return any(role.name == role_name for role in self.roles)
-
-    def has_permission(self, perm_name: str) -> bool:
-        for role in self.roles:
-            if any(permission.name == perm_name for permission in role.permission):
-                return True
-        return False
