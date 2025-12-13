@@ -1,6 +1,8 @@
 from functools import wraps
 from typing import Callable
 from aiogram.types import CallbackQuery, Message
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import db_helper
 from db.crud.user import TelegramUserCRUD
@@ -76,8 +78,8 @@ def require_role(role: str):
                 print("**********************************************************")
             print(type(args[1]))
             user_id = args[1].from_user.id
-            session = db_helper.session_getter()
-            result = await TelegramUserCRUD.has_role(session, user_id, "editor")
+            async with db_helper.session() as session:
+                result = await TelegramUserCRUD.has_role(session, user_id, "editor")
             print(result)
             # print(type(args[0]))
                 # user = arg.get('from_user')
