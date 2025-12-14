@@ -27,7 +27,7 @@ class MainWindow(Window):
 
     @require_role("editor")
     async def go_to_creation(self, callback, button, dialog_manager):
-        print(result)
+        # print(result)
         print("Реддит VS. Твиттер")
         await dialog_manager.start(Creation.create_name)
 

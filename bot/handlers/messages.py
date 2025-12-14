@@ -18,6 +18,34 @@ from schemas.user import TelegramUser
 
 router = Router()
 
+async def delete_messages(message):
+    deleted = 0
+    limit = 100
+    chat_id = message.chat.id
+    from_id = message.message_id
+    chat_type = message.chat.type
+    for msg_id in range(from_id, from_id - limit, -1):
+        try:
+            msg = await bot.forward_message(chat_id=chat_id, from_chat_id=chat_id, message_id=msg_id)
+            await bot.delete_message(chat_id, msg.message_id)  # Удаляем копию (если удалось)
+            await bot.delete_message(chat_id, msg_id)  # Пытаемся удалить оригинал
+            deleted += 1
+            # await asyncio.sleep(0.05)
+        except Exception:
+            # В личке Telegram не даст удалить чужие сообщения (и старые тоже иногда)
+            if chat_type == "private":
+                try:
+                    # Получаем сообщение и удаляем, если оно от бота
+                    original = await bot.get_chat_member(chat_id, bot.id)
+                    msg = await bot.get_chat_message(chat_id, msg_id)
+                    if msg.from_user.id == bot.id:
+                        await bot.delete_message(chat_id, msg_id)
+                        deleted += 1
+                except:
+                    pass
+            continue
+
+
 @router.message(Command(commands=["start"]))
 async def start_command(message: Message):
     """Обробник команди /start."""
@@ -47,48 +75,22 @@ async def start_command(message: Message):
 @require_role("YaPeterGriffin")
 @router.message(Command(commands=["menu"]))
 async def menu_command(message: Message, dialog_manager: DialogManager):
+    # await delete_messages(message)
     await dialog_manager.start(Wiki.main, mode=StartMode.RESET_STACK)
     # await dialog_manager.start(Creation.create_name)
 
 @router.message(Command("clear"))
 async def clear_chat(message: Message, bot: Bot):
-    chat_id = message.chat.id
-    from_id = message.message_id
-    chat_type = message.chat.type
-
-    deleted = 0
-    limit = 100
-
     # Временное сообщение
     notice = await message.answer("🧹 Очищаю сообщения...")
 
-    for msg_id in range(from_id, from_id - limit, -1):
-        try:
-            msg = await bot.forward_message(chat_id=chat_id, from_chat_id=chat_id, message_id=msg_id)
-            await bot.delete_message(chat_id, msg.message_id)  # Удаляем копию (если удалось)
-            await bot.delete_message(chat_id, msg_id)          # Пытаемся удалить оригинал
-            deleted += 1
-            await asyncio.sleep(0.05)
-        except Exception:
-            # В личке Telegram не даст удалить чужие сообщения (и старые тоже иногда)
-            if chat_type == "private":
-                try:
-                    # Получаем сообщение и удаляем, если оно от бота
-                    original = await bot.get_chat_member(chat_id, bot.id)
-                    msg = await bot.get_chat_message(chat_id, msg_id)
-                    if msg.from_user.id == bot.id:
-                        await bot.delete_message(chat_id, msg_id)
-                        deleted += 1
-                except:
-                    pass
-            continue
+    chat_id = message.chat.id
 
-    # Пытаемся удалить саму команду и уведомление
+    await delete_messages(message)
+    # Или отправляем новое сообщение
     try:
         await bot.delete_message(chat_id, message.message_id)
         await bot.delete_message(chat_id, notice.message_id)
     except:
         pass
-
-    # Или отправляем новое сообщение
-    await message.answer(f"✅ Удалено {deleted} сообщений.")
+    await message.answer(f"✅ Удалено 3,14 сообщений.")

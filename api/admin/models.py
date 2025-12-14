@@ -17,6 +17,7 @@ class UserAdmin(ModelView, model=User):
         User.is_bot,
         User.created_at,
         User.updated_at,
+        User.roles
     ]
     form_columns = [
         User.id,

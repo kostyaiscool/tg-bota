@@ -22,7 +22,7 @@ setup_dialogs(dispatcher)
 
 async def set_commands(bot: Bot):
     commands = [
-        BotCommand(command="/start", description="Запустить бота"),
+        # BotCommand(command="/start", description="Запустить бота"),
         BotCommand(command="/menu", description="Отображает главное меню"),
         BotCommand(command="/clear", description="Круче чем Танос"),
     ]
