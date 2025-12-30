@@ -8,6 +8,7 @@ class Wiki(StatesGroup):
     page_text = State()
     search = State()
     search_page = State()
+    comments = State()
 
 class Creation(StatesGroup):
     create_name = State()

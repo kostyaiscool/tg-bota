@@ -8,6 +8,7 @@ from db.base import Base
 if TYPE_CHECKING:
     from db.models.pages import Page
     from db.models.role import Role
+    from db.models.commentaries import Commentary
 
 class User(Base):
     __tablename__ = "users"
@@ -28,6 +29,10 @@ class User(Base):
         lazy="selectin",
     )
 
+    commentaries: Mapped[list["Commentary"]] = relationship(
+        back_populates="author",
+        cascade="all, delete-orphan"
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
 

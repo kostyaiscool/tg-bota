@@ -3,11 +3,14 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Integer, String, DateTime, Text, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
+from typing import List
 
 from db.base import Base
+
 if TYPE_CHECKING:
     from db.models.categories import Category
     from db.models.user import User
+    from db.models.commentaries import Commentary
 
 
 class Page(Base):
@@ -21,6 +24,10 @@ class Page(Base):
     author: Mapped['User'] = relationship(back_populates='pages')
     category_id: Mapped[int] = mapped_column(ForeignKey("categorys.id"))
     categories: Mapped['Category'] = relationship(back_populates='pages')
+    comments = relationship(
+        "Commentary",
+        back_populates="page"
+    )
 
     def __repr__(self) -> str:
         return f"<Page(id={self.id}, name={self.name}>"

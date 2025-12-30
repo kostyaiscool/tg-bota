@@ -25,7 +25,7 @@ class MainWindow(Window):
     async def go_to_search(self, callback, button, dialog_manager):
         await dialog_manager.switch_to(Wiki.search)
 
-    @require_role("editor")
+    @require_role(["editor", "developer"])
     async def go_to_creation(self, callback, button, dialog_manager):
         # print(result)
         print("Реддит VS. Твиттер")

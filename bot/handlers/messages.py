@@ -72,7 +72,7 @@ async def start_command(message: Message):
         await message.answer(f"Раді знову тебе бачити, {message.from_user.first_name}! 🎉")
 
 
-@require_role("YaPeterGriffin")
+# @require_role("YaPeterGriffin")
 @router.message(Command(commands=["menu"]))
 async def menu_command(message: Message, dialog_manager: DialogManager):
     # await delete_messages(message)

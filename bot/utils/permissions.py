@@ -88,7 +88,7 @@ def require_permission(permission: str):
 #
 #     return decorator
 
-def require_role(role: str):
+def require_role(roles: list):
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -96,12 +96,15 @@ def require_role(role: str):
             user_id = callback.from_user.id
 
             async with db_helper.session() as session:
-                has_role = await TelegramUserCRUD.has_role(
-                    session, role, user_id
-                )
-            if not has_role:
-                await callback.answer("❌ У вас нет прав", show_alert=True)
-                return
+                for role in roles:
+                    has_role = await TelegramUserCRUD.has_role(
+                        session, role, user_id
+                    )
+                    if has_role:
+                        break
+                else:
+                    await callback.answer("❌ У вас нет прав", show_alert=True)
+                    return
 
             return await func(*args, **kwargs)
 
