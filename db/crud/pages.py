@@ -80,3 +80,27 @@ class PageCRUD:
         except Exception as e:
             print("Ошибка поиска страницы:", e)
             return []
+
+    @staticmethod
+    async def get_page_by_name(session: AsyncSession, page_name: str) -> Pages:
+        try:
+            result = await session.execute(select(Page).where(Page.name == page_name))
+            return result.scalar_one()
+        except NoResultFound:
+            print('Я ЗАПЕР 456 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
+            return None
+
+    @staticmethod
+    async def change_text(session: AsyncSession, page_id: int, new_text: str):
+        try:
+            result = await session.execute(select(Page).where(Page.id == page_id))
+            page = result.scalar_one_or_none()
+            page.text = new_text
+
+            await session.commit()
+            await session.refresh(page)
+            print(await session.execute(select(Page).where(Page.id == page_id)))
+            return page.text
+        except NoResultFound:
+            print('Я ЗАПЕР 456 ДЕТЕЙ В СВОЕМ ПОДВАЛЕ, И ПОСЛЕДНИЙ, КТО СБЕЖИТ ИЗ НЕГО, ПОЛУЧИТ 456,000,000 ДОЛЛАРОВ!')
+            return None

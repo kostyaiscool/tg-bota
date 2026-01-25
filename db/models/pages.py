@@ -24,7 +24,7 @@ class Page(Base):
     author: Mapped['User'] = relationship(back_populates='pages')
     category_id: Mapped[int] = mapped_column(ForeignKey("categorys.id"))
     categories: Mapped['Category'] = relationship(back_populates='pages')
-    comments = relationship(
+    commentaries = relationship(
         "Commentary",
         back_populates="page"
     )

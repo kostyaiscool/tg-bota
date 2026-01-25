@@ -29,11 +29,20 @@ class Commentary(Base):
     page_id: Mapped[int] = mapped_column(ForeignKey("pages.id"))
     page = relationship(
         "Page",
-        back_populates="comments"
+        back_populates="commentaries"
     )
-    parent: Mapped[Optional["Commentary"]] = relationship("Commentary", remote_side=[id], backref="children")
+    parent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("commentarys.id"),
+        nullable=True
+    )
+
+    parent: Mapped["Commentary | None"] = relationship(
+        "Commentary",
+        remote_side=[id],
+        backref="children"
+    )
     # likes: Mapped[int] = mapped_column(Integer, nullable=True)
     # dislikes: Mapped[int] = mapped_column(Integer, nullable=True)
 
     def __repr__(self) -> str:
-        return f"<Comment(id={self.id}, name={self.name}>"
+        return f"<Comment(id={self.id}, text={self.text}>"

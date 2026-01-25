@@ -135,7 +135,70 @@ class PreviewWindow(Window):
     async def go_to_categories(self, callback, button, dialog_manager: DialogManager):
         await dialog_manager.start(Wiki.category)
 
+class EditNameWindow(Window):
+    def __init__(self):
+        super().__init__(
+            Format(
+                "Нажмите на синее чтобы скопировать:{page_name} \n"
+                "\n<code>{page_text}</code>\n\n"
+                "Измените текст страницы, коя имеет проблему и или ошибку:"
+            ),
+        Button(Const('Назад'), '6', on_click=self.go_back),
+            MessageInput(self.edit_text),
+            state=Creation.editing,
+            getter=self.getter,
+        )
+
+    # @require_role("editor")
+    async def edit_text(self, message, dialog, dialog_manager: DialogManager):
+        query = message.text
+        page_id = dialog_manager.dialog_data.get("page_id")
+        async with db_helper.session() as session:
+            page = await PageCRUD.get_page(session, page_id)
+            await PageCRUD.change_text(session, page_id, query)
+            # page_data = PageCreate(
+            #     name=page.name,
+            #     text=query,
+            #     category_id=page.categories,
+            #     author=page.author,
+            # )
+            # new_page = await PageCRUD.create_or_update(session, page_data)
+        await dialog_manager.switch_to(Creation.preview)
+
+    async def go_back(self, callback, button, dialog_manager: DialogManager):
+        await dialog_manager.start(Wiki.main)
+
+    async def getter(self, dialog_manager: DialogManager, **kwargs):
+        page_id = dialog_manager.start_data.get("page_id")
+        dialog_manager.dialog_data["page_id"] = page_id
+        async with db_helper.session() as session:
+            page = await PageCRUD.get_page(session, page_id)
+
+        return {
+            "page_id": page_id,
+            "page_name": page.name,
+            "page_text": page.text,
+        }
+
+# class EditTextWindow(Window):
+#     def __init__(self):
+#         super().__init__(
+#             Const("Изменить текст: "),
+#             Button(Const('Назад'), '5', on_click=self.go_back),
+#             MessageInput(self.create_text),
+#             state=Creation.edit_text,
+#         )
+#
+#     async def create_text(self, message, dialog, dialog_manager: DialogManager):
+#         query = message.text
+#         dialog_manager.dialog_data["text_input"] = query
+#         await dialog_manager.switch_to(Creation.choose_category)
+#
+#     async def go_back(self, callback, button, dialog_manager: DialogManager):
+#         await dialog_manager.switch_to(Creation.editing)
+
 name_window = CreateNameWindow()
 text_window = CreateTextWindow()
 category_choose_window = ChooseCategoryWindow()
 preview_window = PreviewWindow()
+editing_window = EditNameWindow()

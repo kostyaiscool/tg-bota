@@ -1,3 +1,4 @@
+from db.models.commentaries import Commentary
 from db.models.associations import user_role, role_permission
 from db.models.user import User
 from db.models.role import Role
@@ -13,4 +14,5 @@ __all__ = [
     "Category",
     "user_role",
     "role_permission",
+    "Commentary",
 ]

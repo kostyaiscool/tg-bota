@@ -9,6 +9,8 @@ class Wiki(StatesGroup):
     search = State()
     search_page = State()
     comments = State()
+    comment_page = State()
+    reply = State()
 
 class Creation(StatesGroup):
     create_name = State()
@@ -17,3 +19,4 @@ class Creation(StatesGroup):
     preview = State()
     # search = State()
     editing = State()
+    edit_text = State()

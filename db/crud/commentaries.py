@@ -13,9 +13,9 @@ from schemas.commentaries import CommentaryCreate
 from schemas.pages import Pages, PageCreate
 
 
-class PageCRUD:
+class CommentCRUD:
     @staticmethod
-    async def get_comment(session: AsyncSession, comment_id: int) -> Pages:
+    async def get_comment(session: AsyncSession, comment_id: int) -> CommentaryCreate:
         try:
             result = await session.execute(select(Commentary).where(Commentary.id == comment_id))
             return result.scalar_one()
@@ -24,7 +24,7 @@ class PageCRUD:
             return None
 
     @staticmethod
-    async def create_or_update(session: AsyncSession, comm_data: PageCreate):
+    async def create_or_update(session: AsyncSession, comm_data: CommentaryCreate):
         # Попробуем найти по name (или другому уникальному полю)
         result = await session.execute(
             select(Commentary).where(Commentary.id == comm_data.id)
@@ -36,7 +36,7 @@ class PageCRUD:
                 setattr(comm, key, value)
             status = True
         else:
-            page = Page(**comm_data.dict())
+            comment = Commentary(**comm_data.dict())
             session.add(comm)
             status = False
 
@@ -47,11 +47,11 @@ class PageCRUD:
 
 
     @staticmethod
-    async def get_page_comments(session: AsyncSession, page_id: int) -> Pages:
+    async def get_page_comments(session: AsyncSession, page_id: int) -> list:
         try:
             # result = await session.execute(select(Commentary).where(Commentary.id == page_id))
             # return result.scalar_one()
-            stmt = select(Page).where(Commentary.page_id == page_id)
+            stmt = select(Commentary).where(Commentary.page_id == page_id)
             result = await session.execute(stmt)
             return result.scalars().all()
         except NoResultFound:

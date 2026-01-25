@@ -5,6 +5,7 @@ from aiogram_dialog.widgets.text import Const, Format
 
 from bot.dialogs.v2.states import Wiki, Creation
 from db import db_helper
+from db.crud.commentaries import CommentCRUD
 from db.crud.pages import PageCRUD
 
 
@@ -58,9 +59,10 @@ class PageTextWindow(Window):
         super().__init__(
             Format("<b>{page.name}</b>\n\n{page.text}"),
             # Button(Const('Редактировать'), '7'),
-            Button(Const('Назад к категориям'), '2', on_click=self.go_to_categories),
+            Button(Const('Назад к меню'), '2', on_click=self.go_to_menu),
             Button(Const("Редактировать"), id="edit", on_click=self.go_to_editing),
             Button(Const("Комментарии"), id="comment", on_click=self.go_to_comments),
+            Button(Const("Назад"), id="back", on_click=self.go_to_cat_pages),
             getter=self.page_getter,
             state=Wiki.page_text)
 
@@ -70,20 +72,30 @@ class PageTextWindow(Window):
 
     async def page_getter(self, dialog_manager: DialogManager, **kwargs):
         page_id = dialog_manager.dialog_data.get("page_id", "")
+        print(page_id, "ппппппппппппрррррррррррррррррррррррр")
         async with db_helper.session() as session:
             page = await PageCRUD.get_page(session, page_id)
         return {
             "page": page
         }
 
-    async def go_to_categories(self, callback, button, dialog_manager: DialogManager):
-        await dialog_manager.switch_to(Wiki.category)
+    async def go_to_menu(self, callback, button, dialog_manager: DialogManager):
+        await dialog_manager.switch_to(Wiki.main)
 
     async def go_to_editing(self, callback, button, dialog_manager: DialogManager):
-        await dialog_manager.start(Creation.create_name)
+        page_id = dialog_manager.dialog_data.get("page_id", "")
+        await dialog_manager.start(Creation.editing, data={"page_id": page_id})
 
     async def go_to_comments(self, callback, button, dialog_manager: DialogManager):
+        # dialog_manager.dialog_data["page_id"] = int(item_id)
         await dialog_manager.switch_to(Wiki.comments)
+
+    async def go_to_cat_pages(self, callback, button, dialog_manager: DialogManager):
+        category_id = dialog_manager.dialog_data.get("category_id", "")
+        if category_id != "":
+            await dialog_manager.switch_to(Wiki.cat_page)
+        else:
+            await dialog_manager.switch_to(Wiki.main)
 
 
 class PageSearchWindow(Window):
@@ -173,7 +185,7 @@ class PageCommentWindow(Window):
             id="comment_select",
             item_id_getter=lambda item: item[1],  # page.id
             items="comments",  # ключ из getter'а
-            on_click=self.choose_comment(),
+            on_click=self.choose_comment,
         )
         self.comment_scrolling = ScrollingGroup(
             self.comment_select,
@@ -185,29 +197,76 @@ class PageCommentWindow(Window):
             Const('t'),
             Button(Const('Назад'), '2', on_click=self.go_to_pages),
             self.comment_scrolling,
-            getter=self.comment_getter(),
+            getter=self.comment_getter,
             state=Wiki.comments
         )
 
     async def comment_getter(self, dialog_manager: DialogManager, **kwargs):
-        comment_id = dialog_manager.dialog_data.get("comment_id", "")
+        page_id = dialog_manager.dialog_data.get("page_id", "")
         async with db_helper.session() as session:
-            page = await PageCRUD.get_page(session, comment_id)
+            comments = await CommentCRUD.get_page_comments(session, int(page_id))
+            print("eeeeee", comments)
         return {
-            "page": page
+            "comments": [(comment.text, str(comment.id)) for comment in comments]
         }
 
     async def choose_comment(self, callback, button, dialog_manager: DialogManager, item_id: str):
-        pass
-        # dialog_manager.dialog_data["page_id"] = int(item_id)
-        # await dialog_manager.switch_to(Wiki.page_text)
+        print(int(item_id), "В луа, если добавить 2 как строку и 2 как строку, будет 4. Это не тупость, просто для...")
+        # pass
+        dialog_manager.dialog_data["comment_id"] = int(item_id)
+        await dialog_manager.switch_to(Wiki.page_text)
 
     async def go_to_pages(self, callback, button, dialog_manager: DialogManager):
         await dialog_manager.switch_to(Wiki.page)
+
+class PageSearchedWindow(Window):
+    def __init__(self):
+        self.page_select = Select(
+            Format("{item[0]}"),  # отображаемое имя
+            id="page_select",
+            item_id_getter=lambda item: item[1],  # page.id
+            items="pages",  # ключ из getter'а
+            on_click=self.choose_pages,
+        )
+        self.page_scrolling = ScrollingGroup(
+            self.page_select,
+            id="pages",
+            width=1,
+            height=6,
+        )
+        super().__init__(
+            Const("Результаты поиска"),
+            self.page_scrolling,
+            getter=self.page_search_getter,
+            state=Wiki.search_page,
+        )
+
+    async def go_to_main(self, callback, button, dialog_manager):
+        await dialog_manager.switch_to(Wiki.main)
+
+    async def pages_getter(self, dialog_manager: DialogManager, **kwargs):
+        async with db_helper.session() as session:
+            all_pages = await PageCRUD.get_all_pages(session)
+        return {
+            "pages": [(page.name, str(page.id)) for page in all_pages]
+        }
+
+    async def choose_pages(self, callback, button, dialog_manager: DialogManager, item_id: str):
+        dialog_manager.dialog_data["page_id"] = int(item_id)
+        await dialog_manager.switch_to(Wiki.page_text)
+
+    async def page_search_getter(self, dialog_manager: DialogManager, **kwargs):
+        search = dialog_manager.dialog_data.get("search_input", "")
+        # search = "Два каннибала пили, а закусил только один"
+        async with db_helper.session() as session:
+            pages = await PageCRUD.get_page_name(session, search)
+        # if not pages:
+        #     return {"pages": "Страниц не найдено, лее брат:("}
+        # else:
+        return {"pages": [(page.name, str(page.id)) for page in pages]}
 
 
 page_window = PageWindow()
 page_text_window = PageTextWindow()
 page_search_window = PageSearchWindow()
 page_searched_window = PageSearchedWindow()
-comments_window = PageCommentWindow()

@@ -24,7 +24,7 @@ class CategoryWindow(Window):
             height=6,
         )
         super().__init__(
-            Const("Выберите категорию среди розию"),
+            Const("Выберите категорию среди розию228"),
             Button(Const('Назад'), '2', on_click=self.go_to_main),
             self.category_scrolling,
             getter=self.category_getter,
